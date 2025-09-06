@@ -1,5 +1,7 @@
--- First, create the 'users' table since the 'expenses' table will reference it.
--- This table will store user information.
+-- -----------------------------------------------------------------
+-- Table structure for `users`
+-- -----------------------------------------------------------------
+-- Stores user account information.
 CREATE TABLE users (
     user_id SERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
@@ -7,27 +9,36 @@ CREATE TABLE users (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Now, create the 'expenses' table with a reference to the 'users' table.
+COMMENT ON TABLE users IS 'Stores user account information.';
+COMMENT ON COLUMN users.user_id IS 'Unique identifier for each user.';
+
+
+-- -----------------------------------------------------------------
+-- Table structure for `expenses`
+-- -----------------------------------------------------------------
+-- Stores individual expense records, linked to a user.
 CREATE TABLE expenses (
-    -- expense_id: Unique identifier for each expense, automatically increments.
     expense_id SERIAL PRIMARY KEY,
-
-    -- user_id: Links this expense to a user in the 'users' table.
-    -- Ensures an expense cannot exist without a valid user.
-    user_id INTEGER NOT NULL REFERENCES users(user_id),
-
-    -- amount: The cost of the expense. DECIMAL is used for financial accuracy.
+    user_id INTEGER NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
     amount DECIMAL(10, 2) NOT NULL,
-
-    -- category: The user-defined category for the expense (e.g., 'Food', 'Transport').
     category VARCHAR(50) NOT NULL,
-
-    -- merchant: The name of the vendor or store where the purchase was made. Can be empty.
     merchant VARCHAR(100),
-
-    -- transaction_date: The exact date and time of the expense. Defaults to now.
     transaction_date TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    -- source: How the data was entered. The CHECK constraint ensures data integrity.
     source VARCHAR(10) NOT NULL CHECK (source IN ('manual', 'sms'))
 );
+
+COMMENT ON TABLE expenses IS 'Stores individual expense records for each user.';
+COMMENT ON COLUMN expenses.user_id IS 'Foreign key linking to the users table.';
+COMMENT ON COLUMN expenses.source IS 'The method of data entry (e.g., manual, sms).';
+
+
+-- -----------------------------------------------------------------
+-- Sample Data Insertion
+-- -----------------------------------------------------------------
+-- Optional: Insert a sample user for development and testing purposes.
+INSERT INTO users (username, email) VALUES ('testuser', 'test@example.com');
+
+-- =================================================================
+-- End of Script
+-- =================================================================
+
