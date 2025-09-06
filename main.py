@@ -27,17 +27,21 @@ except ImportError:
 print("✅ All required libraries are found.")
 
 
-# --- DATABASE CONFIGURATION (INTEGRATED NEON DB) ---
-# The connection string for your Neon cloud database is now used.
-# It's recommended to store this in an environment variable for security.
-DATABASE_URL = "postgresql://neondb_owner:npg_Xf06HpGKDlVJ@ep-wandering-snow-ad0y5szb-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require"
+# --- DATABASE CONFIGURATION (NOW USING ENVIRONMENT VARIABLES) ---
+# This line now safely gets the connection string from the deployment environment.
+# Render will provide the value for this variable.
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+# A check to ensure the application doesn't start without the database URL.
+if not DATABASE_URL:
+    raise ValueError("FATAL ERROR: DATABASE_URL environment variable is not set.")
 
 
 # --- FASTAPI APP INITIALIZATION ---
 app = FastAPI(
     title="IntelliSpend API",
     description="API for managing personal expenses and users, with Power BI integration.",
-    version="1.4.0" # Updated version for cloud DB integration
+    version="1.5.0" # Updated version for secure deployment
 )
 
 # --- CORS MIDDLEWARE ---
